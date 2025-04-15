@@ -123,7 +123,10 @@ FUNCTION plot_map_obj, map, _extra=_extra, log=log, dmin=dmin, dmax=dmax, $
 ;        in plot_map_obj not compiling.
 ;     Ver. 7, 08-Mar-2024, Terry Kucera
 ;        Added rgb_table keyword for better functioning on a PC, and
-;        also now extracts rgb table from map if present. 
+;        also now extracts rgb table from map if present.
+;     Ver. 8, 15-Apr-2025, Terry Kucera
+;        X and Y titles now reflect xunit and yunits listed in map
+;        structure. This can be overridden by xtitle and ytitle keywords.
 ;-
 
 IF n_params() LT 1 THEN BEGIN
@@ -164,6 +167,15 @@ ENDIF ELSE BEGIN
   x=findgen(nx)*map.dx + (map.xc - nx/2.*map.dx)
   y=findgen(ny)*map.dy + (map.yc - ny/2.*map.dy)
 ENDELSE 
+
+;
+; Set x and y titles.
+;
+IF tag_exist(map,'xunits') THEN xunits=map.xunits ELSE xunits='arcsec'
+IF tag_exist(map,'yunits') THEN yunits=map.yunits ELSE yunits='arcsec'
+;
+if not keyword_set(xtitle) then xtitle='X ('+xunits+')'
+if not keyword_set(ytitle) then ytitle='Y ('+yunits+')'
 
 ;
 ; This sets the dimensions of the IDL plot window.
@@ -317,8 +329,8 @@ ENDIF ELSE BEGIN
           min_value=min_value,max_value=max_value, $
           rgb_table=rgb_table, layout=layout, $
           margin=margin, title=title, $
-          xtitle='Solar-X (arcsec)', $
-          ytitle='Solar-Y (arcsec)',overplot=overplot)
+          xtitle=xtitle, $
+          ytitle=ytitle,overplot=overplot)
 ENDELSE 
 
 return,p
